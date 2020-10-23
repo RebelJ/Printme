@@ -16,6 +16,18 @@
         android:paddingRight="20dp" >
 
         <EditText
+            android:id="@+id/name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+
+            android:hint="@string/hint_name"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:inputType="textCapWords"
+            />
+
+        <EditText
             android:id="@+id/email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -24,8 +36,8 @@
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
-            android:singleLine="true"/>
-
+            android:singleLine="true"
+           />
 
         <EditText
             android:id="@+id/password"
@@ -36,31 +48,30 @@
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:padding="10dp"
-            android:singleLine="true"/>
-
+            android:singleLine="true"
+            />
 
         <!-- Login Button -->
 
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btnRegister"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
-
-            android:text="@string/btn_login"/>
-
+            android:background="#ea4c88"
+            android:text="@string/btn_register"
+             />
 
         <!-- Link to Login Screen -->
 
         <Button
-            android:id="@+id/btnLinkToRegisterScreen"
+            android:id="@+id/btnLinkToLoginScreen"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
             android:background="@null"
-            android:text="@string/btn_link_to_register"
+            android:text="@string/btn_link_to_login"
             android:textAllCaps="false"
-
             android:textSize="15dp" />
     </LinearLayout>
 
