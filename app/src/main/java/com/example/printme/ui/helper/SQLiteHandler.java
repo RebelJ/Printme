@@ -26,6 +26,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Login Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_FIRSTNAME = "firstName";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
@@ -38,7 +39,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + "TEXT," + KEY_NAME + " TEXT,"
                 + KEY_EMAIL + " TEXT UNIQUE," + KEY_UID + " TEXT,"
                 + KEY_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
@@ -59,10 +60,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addUser(String name, String email, String uid, String created_at) {
+    public void addUser(String firstName, String name, String email, String uid, String created_at) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_FIRSTNAME, firstName); // firstName
         values.put(KEY_NAME, name); // Name
         values.put(KEY_EMAIL, email); // Email
         values.put(KEY_UID, uid); // Email
@@ -79,7 +81,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      * Getting user data from database
      * */
     public HashMap<String, String> getUserDetails() {
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         String selectQuery = "SELECT  * FROM " + TABLE_USER;
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -87,10 +89,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Move to first row
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
-            user.put("name", cursor.getString(1));
-            user.put("email", cursor.getString(2));
-            user.put("uid", cursor.getString(3));
-            user.put("created_at", cursor.getString(4));
+            user.put("firstName", cursor.getString(1));
+            user.put("name", cursor.getString(2));
+            user.put("email", cursor.getString(3));
+            user.put("uid", cursor.getString(4));
+            user.put("created_at", cursor.getString(5));
         }
         cursor.close();
         db.close();

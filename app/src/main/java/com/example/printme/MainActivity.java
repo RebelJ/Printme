@@ -2,6 +2,8 @@ package com.example.printme;
 
 import android.os.Bundle;
 
+import com.example.printme.ui.helper.SQLiteHandler;
+import com.example.printme.ui.helper.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -21,12 +23,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
     private static final String TAG ="Activity";
+
+    private SQLiteHandler db;
+    private SessionManager session;
+    private Button btnLogout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +56,48 @@ public class MainActivity extends AppCompatActivity {
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery,  R.id.nav_tools, R.id.nav_slideshow,
-                R.id.nav_share, R.id.nav_send)
+                R.id.nav_share, R.id.nav_send, R.id.nav_out)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        // SqLite database handler
+        db = new SQLiteHandler(getApplicationContext());
+
+        // session manager
+        session = new SessionManager(getApplicationContext());
+
+        if (!session.isLoggedIn()) {
+            logoutUser();
+        }
+
+        // Logout button click event
+        btnLogout = findViewById(R.id.nav_out);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                logoutUser();
+            }
+        });
+
     }
 
-    @Override
+    /**
+     * Logging out the user. Will set isLoggedIn flag to false in shared
+     * preferences Clears the user data from sqlite users table
+     * */
+    private void logoutUser() {
+        session.setLogin(false);
+
+        db.deleteUsers();
+
+    }
+
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);

@@ -13,6 +13,7 @@
     <string name="menu_tools">Paramètres</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="menu_out">Disconnect</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -22,6 +23,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
+    <string name="hint_fisrtname">Firstname</string>
     <string name="btn_login">LOGIN</string>
     <string name="btn_register">REGISTER</string>
     <string name="btn_link_to_register">Not a member? Sign up now.</string>

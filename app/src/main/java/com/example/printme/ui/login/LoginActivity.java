@@ -51,10 +51,10 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        inputEmail = (EditText) findViewById(R.id.email);
-        inputPassword = (EditText) findViewById(R.id.password);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
+        inputEmail =  findViewById(R.id.email);
+        inputPassword =  findViewById(R.id.password);
+        btnLogin =  findViewById(R.id.btnLogin);
+        btnLinkToRegister =  findViewById(R.id.btnLinkToRegisterScreen);
 
         // Progress dialog
         pDialog = new Dialog(this);
@@ -123,7 +123,7 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "Login Response: " + response.toString());
+                Log.d(TAG, "Login Response: " + response);
                 hideDialog();
 
                 try {
@@ -140,13 +140,14 @@ public class LoginActivity extends Activity {
                         String uid = jObj.getString("uid");
 
                         JSONObject user = jObj.getJSONObject("user");
+                        String firstName = user.getString("firstName");
                         String name = user.getString("name");
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(name, email, uid, created_at);
+                        db.addUser(firstName, name, email, uid, created_at);
 
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,
@@ -180,7 +181,7 @@ public class LoginActivity extends Activity {
             @Override
             protected Map<String, String> getParams() {
                 // Posting parameters to login url
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 params.put("email", email);
                 params.put("password", password);
 
