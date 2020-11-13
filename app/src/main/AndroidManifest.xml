@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-sdk android:targetSdkVersion="21" />
+
 
     <application android:name=".ui.app.AppController"
         android:allowBackup="true"
@@ -17,8 +19,6 @@
         android:usesCleartextTraffic="true">
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
-
-
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/app_name"
@@ -26,7 +26,6 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -38,12 +37,19 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" /> <!-- activity used to share picture to the service -->
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <activity
+            android:name=".ui.login.LogoutActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- activity used to share picture to the service -->
         <activity
             android:name=".ui.gallery.LaunchService"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="stateVisible|adjustResize">
-
             <!-- Picture share intents -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -56,6 +62,7 @@
         <service
             android:name=".ui.gallery.ListPicture"
             android:exported="true"
+            android:enabled="true"
             android:label="@string/app_name" />
 
 

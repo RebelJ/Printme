@@ -26,6 +26,7 @@ import com.example.printme.ui.app.AppConfig;
 import com.example.printme.ui.app.AppController;
 import com.example.printme.ui.helper.SQLiteHandler;
 import com.example.printme.ui.helper.SessionManager;
+import com.example.printme.ui.model.User;
 import com.example.printme.ui.register.RegisterActivity;
 
 import org.json.JSONException;
@@ -148,6 +149,9 @@ public class LoginActivity extends Activity {
 
                         // Inserting row in users table
                         db.addUser(firstName, name, email, uid, created_at);
+
+                        User use = new User(firstName, name, email);
+
 
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,

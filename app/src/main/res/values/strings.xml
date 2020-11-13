@@ -2,7 +2,7 @@
     <string name="app_name">Printme</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">François Corbin</string>
+    <string name="nav_header_title">Prenom Nom</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -23,7 +23,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
-    <string name="hint_fisrtname">Firstname</string>
+    <string name="hint_firstname">Firstname</string>
     <string name="btn_login">LOGIN</string>
     <string name="btn_register">REGISTER</string>
     <string name="btn_link_to_register">Not a member? Sign up now.</string>

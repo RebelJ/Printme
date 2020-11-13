@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -41,6 +42,7 @@ public class RegisterActivity extends Activity {
     private Dialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
+    private static final int SOCKET_TIMEOUT_MS = 1000 * 10; //default is 2500
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -186,7 +188,10 @@ public class RegisterActivity extends Activity {
             }
 
         };
-
+        strReq.setRetryPolicy(new DefaultRetryPolicy(
+                SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }

@@ -1,15 +1,23 @@
 package com.example.printme;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+
 
 import com.example.printme.ui.helper.SQLiteHandler;
 import com.example.printme.ui.helper.SessionManager;
+import com.example.printme.ui.login.LoginActivity;
+import com.example.printme.ui.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -23,7 +31,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
-import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
     private SQLiteHandler db;
     private SessionManager session;
-    private Button btnLogout;
+
+    private TextView textViewUser;
+    private TextView textViewEmail;
+    private User user;
 
 
     @Override
@@ -55,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery,  R.id.nav_tools, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_tools, R.id.nav_slideshow,
                 R.id.nav_share, R.id.nav_send, R.id.nav_out)
                 .setDrawerLayout(drawer)
                 .build();
@@ -64,6 +77,21 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, 1);
+
+        }
+
+      /*  setContentView(R.layout.nav_header_main);
+
+        textViewUser =  findViewById(R.id.textView_user);
+        textViewEmail =  findViewById(R.id.textView_email);
+
+        textViewUser.setText(user.getFirstName()+" "+user.getName());
+        textViewEmail.setText(user.getEmail());
+*/
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
@@ -74,27 +102,31 @@ public class MainActivity extends AppCompatActivity {
             logoutUser();
         }
 
-        // Logout button click event
-        btnLogout = findViewById(R.id.nav_out);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                logoutUser();
-            }
-        });
-
     }
 
-    /**
-     * Logging out the user. Will set isLoggedIn flag to false in shared
-     * preferences Clears the user data from sqlite users table
-     * */
     private void logoutUser() {
         session.setLogin(false);
 
         db.deleteUsers();
 
+        // Launching the login activity
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==1){
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
         @Override
