@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name=" android.Manifest.permission.INTERACT_ACROSS_USERS" />
 
     <uses-sdk android:targetSdkVersion="21" />
 
@@ -48,7 +50,7 @@
         <!-- activity used to share picture to the service -->
         <activity
             android:name=".ui.gallery.LaunchService"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/Theme.AppCompat.Translucent"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <!-- Picture share intents -->
             <intent-filter>
@@ -62,9 +64,7 @@
         <service
             android:name=".ui.gallery.ListPicture"
             android:exported="true"
-            android:enabled="true"
-            android:label="@string/app_name" />
-
+            android:enabled="true" />
 
     </application>
 

@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="499dp"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:paddingLeft="20dp"
@@ -68,6 +68,12 @@
             android:text="@string/btn_register" />
 
         <!-- Link to Login Screen -->
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="En m'inscrivant, je reconnais avoir lu et accepte les conditions générales de vente. J'accepte également que POP (société domiciliée en France) utilise mes données personnelles dans le cadre de la création de mon compte. " />
 
         <Button
             android:id="@+id/btnLinkToLoginScreen"

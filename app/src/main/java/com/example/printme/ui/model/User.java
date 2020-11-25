@@ -6,6 +6,7 @@ public class User {
     private String name;
     private String email;
     private Integer nbPicture;
+    private Integer id;
 
     /**
      * Creates a new User with a default home directory
@@ -22,16 +23,25 @@ public class User {
 
     /**
      * Creates a new User with a default home directory
+     * @param id of the user
      * @param firstName of the user
      * @param name of the user
      * @param email of the user
      * @param nbPicture rest in the abonment
      */
-    public User(String firstName , String name, String email , Integer nbPicture){
+    public User(Integer id, String firstName , String name, String email , Integer nbPicture){
+        this.id = id;
         this.firstName = firstName;
         this.name = name;
         this.email = email;
         this.nbPicture = nbPicture;
+    }
+
+    /**
+     * @return the firstName of the user
+     */
+    public Integer getId(){
+        return this.id;
     }
 
     /**
