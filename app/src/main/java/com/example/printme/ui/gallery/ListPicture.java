@@ -1,98 +1,88 @@
 package com.example.printme.ui.gallery;
 
-import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+
 import android.app.Service;
-import android.content.Context;
+import android.content.ClipData;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
-
+import androidx.annotation.Nullable;
 import com.example.printme.BuildConfig;
-import com.example.printme.MainActivity;
-
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
+import com.example.printme.ui.helper.SessionManager;
 import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.UUID;
 
+import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
 
 
+
  public class ListPicture extends Service {
+     private SessionManager session;
+     private static Thread monThread = null;
 
-    private static Thread monThread = null;
-    public String imgPath;
-    private final SingleUploadBroadcastReceiver uploadReceiver = new SingleUploadBroadcastReceiver();
-    private static final int STORAGE_PERMISSION_CODE = 4655;
+     String uploadFilePath ;
+     int serverResponseCode = 0;
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+     public class LocalBinder extends Binder
+     {
+         public ListPicture getService()
+         {
+             return ListPicture.this;
+         }
+     }
+
+     // Create the instance on the service.
+     private final LocalBinder binder = new LocalBinder();
+
+     // Return this instance from onBind method.
+     // You may also return new LocalBinder() which is
+     // basically the same thing.
+     @Nullable
+     @Override
+     public IBinder onBind(Intent intent)
+     {
+         return binder;
+     }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Intent monIntent = new Intent(ListPicture.this, MainActivity.class);
+
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         // Or, you can define it manually.
         UploadService.NAMESPACE = "com.example.yourapp";
-
-
-
-        if (Build.VERSION.SDK_INT >= 26) {
-            String CHANNEL_ID = "my_channel_01";
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("")
-                    .setContentText("").build();
-
-            startForeground(1, notification);
-        }
+        // SQLite database handler
+        // Session manager
+        session = new SessionManager(getApplicationContext());
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-       // Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
 
         String action = intent.getAction();
         String type = intent.getType();
 
+
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             if (type.startsWith("image/")) {
-             //   Toast.makeText(this, "action send", Toast.LENGTH_LONG).show();
                 handleSendImage(intent); // Handle single image being sent
 
             }
@@ -106,7 +96,6 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Stopped", Toast.LENGTH_LONG).show();
         if (monThread!=null)
         {
             monThread.isInterrupted();
@@ -116,130 +105,135 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
 
     void handleSendMultipleImages(Intent intent) {
         ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-   /*     if (imageUris != null) {
-            // Update UI to reflect multiple images being shared
-        }*/
-    }
+        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION); intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
-    void handleSendImage(Intent intent) {
-        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (imageUri != null) {
-            // Update UI to reflect image being shared
-            Toast.makeText(this, "handleSindImage", Toast.LENGTH_LONG).show();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            imgPath = cursor.getString(columnIndex);
-            cursor.close();
-            Log.e("path", "----------------" + imgPath);
-        }
-        uploadMultipart();
-         //   new Upload().execute();
-        }
-
-
-
-
-    public void uploadMultipart() {
-
-        try {
-
-            final String name = "test1";
-
-            Toast.makeText(this, "Uploading file. Please wait...", Toast.LENGTH_SHORT).show();
-            final String uploadId = UUID.randomUUID().toString();
-            //Creating a multi part request
-
-            String boundary = "---------------------------14737809831466499882746641449";
-            new MultipartUploadRequest(this, uploadId, URL_UPLOAD)
-                    .addHeader("Content-Type", "multipart/form-data; ")
-                    .addFileToUpload(imgPath, "image") //Adding file
-                    .addParameter("name", name) //Adding text parameter to the request
-                    .setNotificationConfig(new UploadNotificationConfig())
-                    .setMaxRetries(3)
-                    .setDelegate(uploadReceiver)
-                    .startUpload();
-
-        } catch (Exception exc) {
-            // Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "Error While uploading...", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-
-    class Upload extends AsyncTask<Void, Void, String> {
-
-
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            final String name = "test1";
-
-            //Calling the upload Image method
-            //Uploading code
-            try{
-
-                String uploadId = UUID.randomUUID().toString();
-                //Creating a multi part request
-                MultipartUploadRequest req = new MultipartUploadRequest((Context) getBaseContext(), uploadId, URL_UPLOAD)
-                        .addFileToUpload(imgPath, "image") //Adding file
-                        .addParameter("name", name) //Adding text parameter to the request
-                        // .setNotificationConfig(new UploadNotificationConfig())
-                        .setMaxRetries(2);
-                // req.startUpload();
-
-                String uploadCurrentFile = req.startUpload();
-                if (uploadCurrentFile != null && sendToServer()) {
-                    req.setAutoDeleteFilesAfterSuccessfulUpload(true);
+        if (imageUris != null) {
+            if (intent.getClipData() != null) {
+                ClipData mClipData = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    mClipData = intent.getClipData();
                 }
-                else req.setAutoDeleteFilesAfterSuccessfulUpload(false);
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            } catch (Exception exc) {
-                Log.e("AndroidUploadService", exc.getMessage(), exc);
+                for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                    ClipData.Item item = mClipData.getItemAt(i);
+
+                    Uri uri = item.getUri();
+
+                    String packageName = "com.example.printme.ui.gallery";
+                    this.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    // Get the cursor
+                    Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                    // Move to first row
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    uploadFilePath = cursor.getString(columnIndex);
+                    Log.e("path", "----------------" + uploadFilePath);
+                    cursor.close();
+
+
+                    new Thread(new Runnable() {
+                        public void run() {
+
+                            try {
+                                uploadFile(uploadFilePath);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }).start();
+                }
             }
 
-            Log.e("path", "----------------" + imgPath);
-            return "Success";
-        }
-
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
         }
     }
 
-/*
-    @Override
-    public void onProgress(int progress) {
-        //your implementation
-    }
 
-    @Override
-    public void onProgress(long uploadedBytes, long totalBytes) {
-        //your implementation
-    }
 
-    @Override
-    public void onError(Exception exception) {
-        //your implementation
-    }
+     void handleSendImage(Intent intent) {
+         Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
 
-    @Override
-    public void onCompleted(int serverResponseCode, byte[] serverResponseBody) {
-        //your implementation
-    }
+         intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION); intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+         if (imageUri != null) {
 
-    @Override
-    public void onCancelled() {
-        //your implementation
-    }
 
-*/
+             // Update UI to reflect image being shared
+             String[] filePathColumn = {MediaStore.Images.Media.DATA};
+             Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
+             cursor.moveToFirst();
+             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+             uploadFilePath = cursor.getString(columnIndex);
+             cursor.close();
+
+             new Thread(new Runnable() {
+                 public void run() {
+
+                     try {
+                         uploadFile(uploadFilePath );
+                     }
+                     catch(IOException e) {
+                         e.printStackTrace();
+                     }
+
+
+                 }
+             }).start();
+
+             Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+         }
+     }
+
+
+     public int uploadFile(String sourceFileUri)throws IOException {
+
+
+         File sourceFile = new File(sourceFileUri);
+
+         if (!sourceFile.isFile()) {
+
+             Log.e("uploadFile", "Source File not exist :"
+                     +uploadFilePath);
+             return 0;
+         }
+         else
+         {
+
+             try {
+                 String charset = "UTF-8";
+
+
+
+                 String iud = session.getUid();
+
+                 MultipartUtility multipart = new MultipartUtility(URL_UPLOAD, charset);
+                 multipart.addFormField("idUser", iud);
+                 multipart.addFilePart("filename", new File(uploadFilePath));
+                 String response = multipart.finish(); // response from server.
+                 Log.e("Upload file to server", "Done: " + response);
+
+
+
+             } catch (MalformedURLException ex) {
+
+                 ex.printStackTrace();
+                 Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+             } catch (Exception e) {
+
+                 e.printStackTrace();
+
+                 Log.e("Upload file to server Exception", "Exception : "
+                         + e.getMessage(), e);
+             }
+             return serverResponseCode;
+
+         } // End else block
+     }
+
 
     public String getTextFromInputStream(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));

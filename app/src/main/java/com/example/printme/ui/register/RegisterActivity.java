@@ -23,6 +23,7 @@ import com.example.printme.ui.app.AppController;
 import com.example.printme.ui.helper.SQLiteHandler;
 import com.example.printme.ui.helper.SessionManager;
 import com.example.printme.ui.login.LoginActivity;
+import com.example.printme.ui.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +40,17 @@ public class RegisterActivity extends Activity {
     private EditText inputFullName;
     private EditText inputEmail;
     private EditText inputPassword;
+    private EditText inputConfirmMdp;
+
+    private EditText inputNumAddress;
+    private EditText inputVoieAddress;
+    private EditText inputCodePostal;
+    private EditText inputCountry;
+    private EditText inputRegion;
+    private EditText inputBatiment;
+    private EditText inputPhone;
+
+
     private Dialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
@@ -52,6 +64,15 @@ public class RegisterActivity extends Activity {
         inputFullName =  findViewById(R.id.name);
         inputEmail = findViewById(R.id.email);
         inputPassword = findViewById(R.id.password);
+        inputConfirmMdp =  findViewById(R.id.passwordconfirm);
+        inputNumAddress =  findViewById(R.id.addressNumber);
+        inputVoieAddress = findViewById(R.id.addressHouse);
+        inputCodePostal = findViewById(R.id.codePostal);
+        inputCountry = findViewById(R.id.country);
+        inputRegion = findViewById(R.id.addressRegion);
+        inputBatiment = findViewById(R.id.addressBatiment);
+        inputPhone = findViewById(R.id.numeroPhone);
+
         btnRegister =  findViewById(R.id.btnRegister);
         btnLinkToLogin = findViewById(R.id.btnLinkToLoginScreen);
 
@@ -81,14 +102,35 @@ public class RegisterActivity extends Activity {
                 String name = inputFullName.getText().toString().trim();
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
+                String confirmPassword = inputConfirmMdp.getText().toString().trim();
 
-                if (!firstName.isEmpty() && !name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
-                    registerUser(firstName, name, email, password);
-                } else {
+                String numAddress = inputNumAddress.getText().toString().trim();
+                String voieAddress = inputVoieAddress.getText().toString().trim();
+                String codePostal = inputCodePostal.getText().toString().trim();
+                String country = inputCountry.getText().toString().trim();
+                String region = inputRegion.getText().toString().trim();
+                String batiment = inputBatiment.getText().toString().trim();
+                String phone = inputPhone.getText().toString().trim();
+
+
+                if (confirmPassword == password){
+                    if (!firstName.isEmpty() && !name.isEmpty() && !email.isEmpty() && !password.isEmpty() &&
+                    !numAddress.isEmpty() && !voieAddress.isEmpty() && !codePostal.isEmpty() && !country.isEmpty()) {
+                        registerUser(firstName, name, email, password, numAddress, voieAddress, codePostal, country, region, batiment, phone);
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                "Entrer tous les données obligatoires * ", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }else
+                {
                     Toast.makeText(getApplicationContext(),
-                            "Please enter your details!", Toast.LENGTH_LONG)
+                            "Les mots de passe ne sont pas les mêmes", Toast.LENGTH_LONG)
                             .show();
                 }
+
+
+
             }
         });
 
@@ -110,7 +152,8 @@ public class RegisterActivity extends Activity {
      * email, password) to register url
      * */
     private void registerUser(final String firstName, final String name, final String email,
-                              final String password) {
+                              final String password, final String numAddress, final String voieAddress,
+                              final String codePostal, final String country, final String region,final String batiment, final String phone) {
         // Tag used to cancel the request
         String tag_string_req = "req_register";
 
@@ -137,11 +180,20 @@ public class RegisterActivity extends Activity {
                         String firstName = user.getString("firstName");
                         String name = user.getString("name");
                         String email = user.getString("email");
+                        String numero = user.getString("numero");
+                        String address = user.getString("address");
+                        String codePostal = user.getString("codePostal");
+                        String country = user.getString("country");
+                        String region = user.getString("region");
+                        String batiment = user.getString("batiment");
+                        String phone = user.getString("phone");
+
                         String created_at = user
                                 .getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(firstName, name, email, uid, created_at);
+                        db.addUser(firstName, name, email, uid, created_at, numero, address, codePostal, country, region, batiment, phone);
+
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -183,6 +235,13 @@ public class RegisterActivity extends Activity {
                 params.put("name", name);
                 params.put("email", email);
                 params.put("password", password);
+                params.put("numero", numAddress);
+                params.put("address", voieAddress);
+                params.put("codePostal", codePostal);
+                params.put("country", country);
+                params.put("region", region);
+                params.put("batiment", batiment);
+                params.put("phone", phone);
 
                 return params;
             }

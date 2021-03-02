@@ -23,6 +23,9 @@ public class SessionManager {
     private static final String PREF_NAME = "AndroidHiveLogin";
 
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
+    private static final String KEY_IS_Uid = "keyUid";
+    private static final String KEY_IS_email = "keyEmail";
+    private static final String KEY_IS_USER = "keyUser";
 
     public SessionManager(Context context) {
         this._context = context;
@@ -39,6 +42,45 @@ public class SessionManager {
 
         Log.d(TAG, "User login session modified!");
     }
+
+    public void setUid(String Uid) {
+        editor.putString(KEY_IS_Uid, Uid);
+        // commit changes
+        editor.commit();
+    }
+
+    public void setEmail(String email) {
+
+        editor.putString(KEY_IS_email, email);
+
+        // commit changes
+        editor.commit();
+    }
+
+    public void setUser(String Fname, String name) {
+
+        editor.putString(KEY_IS_USER, Fname + " " + name);
+
+        // commit changes
+        editor.commit();
+    }
+
+
+    public String getUid() {
+
+        return pref.getString(KEY_IS_Uid, "");
+    }
+
+    public String getEmail() {
+
+        return pref.getString(KEY_IS_email, "");
+    }
+
+    public String getUser() {
+
+        return pref.getString(KEY_IS_USER, "");
+    }
+
 
     public boolean isLoggedIn(){
         return pref.getBoolean(KEY_IS_LOGGEDIN, false);

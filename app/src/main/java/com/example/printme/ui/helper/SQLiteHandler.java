@@ -60,7 +60,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addUser(String firstName, String name, String email, String uid, String created_at) {
+    public void addUser(String firstName, String name, String email, String uid, String created_at, String numAddress, String voieAddress,
+                        String codePostal, String country, String region, String batiment, String phone) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -69,6 +70,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(KEY_EMAIL, email); // Email
         values.put(KEY_UID, uid); // Email
         values.put(KEY_CREATED_AT, created_at); // Created At
+
+
 
         // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
@@ -80,7 +83,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Getting user data from database
      * */
-    public HashMap<String, String> getUserDetails() {
+    public HashMap<String, String>  getUserDetails() {
         HashMap<String, String> user = new HashMap<>();
         String selectQuery = "SELECT  * FROM " + TABLE_USER;
 
@@ -102,6 +105,76 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return user;
     }
+
+    /**
+     * Getting user data from database
+     * */
+    public HashMap<String, String>  getNamenFirst() {
+        HashMap<String, String> user = new HashMap<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_USER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            user.put("firstName", cursor.getString(1));
+            user.put("name", cursor.getString(2));
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
+
+        return user;
+    }
+
+    /**
+     * Getting user email from database
+     * */
+    public String  getUserEmail() {
+        HashMap<String, String> user = new HashMap<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_USER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+
+            user.put("email", cursor.getString(3));
+
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
+
+        return user.toString();
+    }
+
+    /**
+     * Getting user iud from database
+     * */
+    public String  getUserUid() {
+        HashMap<String, String> user = new HashMap<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_USER;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            user.put("uid", cursor.getString(4));
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
+
+        return user.toString();
+    }
+
 
     /**
      * Re crate database Delete all tables and create them again

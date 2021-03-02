@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+
+
+
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_tools, R.id.nav_slideshow,
                 R.id.nav_share, R.id.nav_send, R.id.nav_out)
@@ -84,14 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-      /*  setContentView(R.layout.nav_header_main);
-
-        textViewUser =  findViewById(R.id.textView_user);
-        textViewEmail =  findViewById(R.id.textView_email);
-
-        textViewUser.setText(user.getFirstName()+" "+user.getName());
-        textViewEmail.setText(user.getEmail());
-*/
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
@@ -101,6 +98,16 @@ public class MainActivity extends AppCompatActivity {
         if (!session.isLoggedIn()) {
             logoutUser();
         }
+
+
+/*
+        setContentView(R.layout.nav_header_main);
+
+        textViewUser =  findViewById(R.id.textView_user);
+        textViewEmail =  findViewById(R.id.textView_email);
+
+        textViewUser.setText(session.getUser());
+        textViewEmail.setText(session.getEmail());*/
 
     }
 

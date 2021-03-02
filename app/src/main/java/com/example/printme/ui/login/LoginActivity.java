@@ -3,6 +3,8 @@ package com.example.printme.ui.login;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.printme.MainActivity;
@@ -42,6 +44,7 @@ public class LoginActivity extends Activity {
     private Button btnLogin;
     private Button btnLinkToRegister;
     private EditText inputEmail;
+    private EditText mdpBeta;
     private EditText inputPassword;
     private Dialog pDialog;
     private SessionManager session;
@@ -56,6 +59,7 @@ public class LoginActivity extends Activity {
         inputPassword =  findViewById(R.id.password);
         btnLogin =  findViewById(R.id.btnLogin);
         btnLinkToRegister =  findViewById(R.id.btnLinkToRegisterScreen);
+        mdpBeta = findViewById(R.id.passwordBETA);
 
         // Progress dialog
         pDialog = new Dialog(this);
@@ -67,10 +71,15 @@ public class LoginActivity extends Activity {
         // Session manager
         session = new SessionManager(getApplicationContext());
 
+
+
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             startActivity(intent);
             finish();
         }
@@ -100,10 +109,16 @@ public class LoginActivity extends Activity {
         btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
+                String mdp = mdpBeta.getText().toString().trim();
+            if (!mdp.isEmpty() && mdp.equals("HK4MP")){
                 Intent i = new Intent(getApplicationContext(),
                         RegisterActivity.class);
                 startActivity(i);
                 finish();
+            }
+
+
+
             }
         });
 
@@ -144,13 +159,22 @@ public class LoginActivity extends Activity {
                         String firstName = user.getString("firstName");
                         String name = user.getString("name");
                         String email = user.getString("email");
+                        String numero = user.getString("numero");
+                        String address = user.getString("address");
+                        String codePostal = user.getString("codePostal");
+                        String country = user.getString("country");
+                        String region = user.getString("region");
+                        String batiment = user.getString("batiment");
+                        String phone = user.getString("phone");
                         String created_at = user
                                 .getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(firstName, name, email, uid, created_at);
+                       // db.addUser(firstName, name, email, uid, created_at, numero, address, codePostal, country, region, batiment, phone);
 
-                        User use = new User(firstName, name, email);
+                        session.setUid(uid);
+                        session.setEmail(email);
+                        session.setUser(firstName,name);
 
 
                         // Launch main activity
@@ -202,6 +226,8 @@ public class LoginActivity extends Activity {
         if (!pDialog.isShowing())
             pDialog.show();
     }
+
+
 
     private void hideDialog() {
         if (pDialog.isShowing())
