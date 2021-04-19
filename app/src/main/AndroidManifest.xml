@@ -5,44 +5,71 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name=" android.Manifest.permission.INTERACT_ACROSS_USERS" />
+
+    <uses-sdk android:targetSdkVersion="25" />
 
 
     <application
+        android:requestLegacyExternalStorage="true"
+        android:name=".ui.app.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
         <activity
-            android:name=".ui.Login.ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
-        <activity
-            android:name=".MainActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.register.RegisterActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <activity
+            android:name=".ui.login.LogoutActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!-- activity used to share picture to the service -->
         <activity
             android:name=".ui.gallery.LaunchService"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/Theme.AppCompat.Translucent"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <!-- Picture share intents -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
-        </activity>
-        <!-- Service used exclusively to send picture -->
+        </activity> <!-- Service used exclusively to send picture -->
         <service
             android:name=".ui.gallery.ListPicture"
             android:exported="true"
-            android:label="@string/app_name" />
+            android:enabled="true" />
+
+
     </application>
 
 </manifest>
