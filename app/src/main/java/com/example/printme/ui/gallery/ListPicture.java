@@ -14,8 +14,13 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.example.printme.BuildConfig;
+import com.example.printme.ui.helper.SQLiteHandler;
 import com.example.printme.ui.helper.SessionManager;
 import net.gotev.uploadservice.UploadService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -25,15 +30,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
+import static com.example.printme.ui.app.AppConfig.URL_UPLOAD_PELICULLE;
 
 
-
- public class ListPicture extends Service {
+public class ListPicture extends Service {
      private SessionManager session;
+     private SQLiteHandler db;
      private static Thread monThread = null;
 
      String uploadFilePath ;
@@ -67,7 +74,7 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         // Or, you can define it manually.
-        UploadService.NAMESPACE = "com.example.yourapp";
+        UploadService.NAMESPACE = "com.example.Printme";
         // SQLite database handler
         // Session manager
         session = new SessionManager(getApplicationContext());
@@ -175,16 +182,16 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
 
                      try {
                          uploadFile(uploadFilePath );
+                         Toast.makeText(getApplicationContext(), "well done ", Toast.LENGTH_LONG).show();
                      }
                      catch(IOException e) {
                          e.printStackTrace();
+                         Toast.makeText(getApplicationContext(), "upload error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                      }
-
-
                  }
              }).start();
 
-             Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+
          }
      }
 
@@ -217,6 +224,45 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
                  Log.e("Upload file to server", "Done: " + response);
 
 
+                 try {
+                     JSONObject jObj = new JSONObject(response);
+                     boolean error = jObj.getBoolean("error");
+
+                     // Check for error node in json
+                     if (!error) {
+                         Integer idImage  = jObj.getInt("id");
+                         // Now store the id image in SQLite
+                         db.addIdImage(idImage, uploadFilePath );
+
+
+                         HashMap<Integer, String> peliculle = new HashMap<>();
+                        // String peliculle = "";
+
+                          peliculle = db.getIdImage();
+
+
+                       /*  Cursor cursor = db.fetch();
+                         cursor.moveToFirst();
+                         peliculle = cursor.getInt(2);*/
+                        // peliculle.add(db.getIdImage());
+                         if(peliculle.size() == 24)
+                         {
+                             // function send peliculle
+                            uploadPeliculle(peliculle);
+
+                         }
+
+                     }
+
+                 } catch (JSONException e) {
+                     // JSON error
+                     e.printStackTrace();
+                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                 }
+
+
+
+
 
              } catch (MalformedURLException ex) {
 
@@ -232,6 +278,64 @@ import static com.example.printme.ui.app.AppConfig.URL_UPLOAD;
              return serverResponseCode;
 
          } // End else block
+     }
+
+
+     public int uploadPeliculle(HashMap peliculle)throws IOException {
+
+
+                String pel = peliculle.toString();
+             try {
+                 String charset = "UTF-8";
+
+                 String iud = session.getUid();
+
+               //  ArrayList<String> peliculle = new ArrayList<peliculle>();
+                // String pelTable = peliculle;
+
+                 MultipartUtility multipart = new MultipartUtility(URL_UPLOAD_PELICULLE, charset);
+                 multipart.addFormField("idUser", iud);
+                 multipart.addFormField("table", pel);
+                // multipart.addFilePart("table", new File(uploadFilePath));
+                 String response = multipart.finish(); // response from server.
+                 Log.e("Upload file to server", "Done: " + response);
+
+
+                 try {
+                     JSONObject jObj = new JSONObject(response);
+                     boolean error = jObj.getBoolean("error");
+
+                     // Check for error node in json
+                     if (!error) {
+                         Integer rep  = jObj.getInt("msg");
+
+                         Toast.makeText(getApplicationContext(), rep, Toast.LENGTH_LONG).show();
+
+                         // Now store the id image in SQLite
+                     }
+
+                 } catch (JSONException e) {
+                     // JSON error
+                     e.printStackTrace();
+                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                 }
+
+
+
+
+
+             } catch (MalformedURLException ex) {
+
+                 ex.printStackTrace();
+                 Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+             } catch (Exception e) {
+
+                 e.printStackTrace();
+
+                 Log.e("Upload file to server Exception", "Exception : "
+                         + e.getMessage(), e);
+             }
+             return serverResponseCode;
      }
 
 

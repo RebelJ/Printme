@@ -5,13 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.Image;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.util.HashMap;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
 
     private static final String TAG = SQLiteHandler.class.getSimpleName();
+
+    private SQLiteDatabase database;
 
     // All Static variables
     // Database Version
@@ -22,6 +26,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     // Login table name
     private static final String TABLE_USER = "user";
+    // Login table name
+    private static final String TABLE_IMAGE = "image";
 
     // Login Table Columns names
     private static final String KEY_ID = "id";
@@ -30,6 +36,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
+    private static final String KEY_IDIMAGE = "";
+    private static final String KEY_IMAGE = "";
+
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -80,6 +89,25 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "New user inserted into sqlite: " + id);
     }
 
+
+    /**
+     * Storing user details in database
+     * */
+    public void addIdImage(Integer idImage, String image) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDIMAGE, idImage); // idImage
+        values.put(KEY_IMAGE, image); // Name
+
+
+        // Inserting Row
+        long id = db.insert(TABLE_IMAGE, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New image inserted into sqlite: " + id);
+    }
+
     /**
      * Getting user data from database
      * */
@@ -105,6 +133,34 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return user;
     }
+
+
+    /**
+     * Getting all id image from database
+     * */
+    public HashMap  getIdImage() {
+        HashMap<String, Integer> image = new HashMap<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_IMAGE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+
+            image.put("idImage", cursor.getInt(0));
+
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching image from Sqlite: " + image.toString());
+
+        return image;
+    }
+
+
+
 
     /**
      * Getting user data from database
@@ -174,6 +230,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return user.toString();
     }
+
+
 
 
     /**
