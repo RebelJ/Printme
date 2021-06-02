@@ -41,7 +41,7 @@ public class Picture implements Parcelable {
         }
     };
 
-/*
+
     public String getUrl() {
         return mUrl;
     }
@@ -59,7 +59,7 @@ public class Picture implements Parcelable {
     }
 
     public static  Picture[] getSpacePhotos(Context context) {
-        ArrayList<String> pop = new ArrayList<String>();
+       /* ArrayList<String> pop = new ArrayList<String>();
         // SQLite database handler
         db = new SQLiteHandler(context);
         pop = db.getImage();
@@ -75,12 +75,45 @@ public class Picture implements Parcelable {
 
         return  new Picture {
                 for(int i =0; i<pop.size(); i++) {
-                     pict.get(i)
+                     pict.get(i);
                 }
-        };
+        };*/
+
+        ArrayList<String> pop = new ArrayList<String>();
+        // SQLite database handler
+        db = new SQLiteHandler(context);
+        pop = db.getImage();
+
+        ArrayList<Picture[]> pict = new ArrayList<Picture[]>();
+        Picture[] a  = new Picture[pop.size()];
+
+        for (int i = 0; i < pop.size(); i++) {
+            a[i] = new Picture(pop.get(i), "pop " + i);
+        }
+
+
+        //Picture[]  a = new Picture[pop.size()];
+
+        /*    for (int i = 0; i < pop.size(); i++) {
+                {
+                    a =  pict.get(i);
+                }
+            }*/
+
+            return a;
+
+/*
+        return new Picture[]{
+                new Picture("http://i.imgur.com/zuG2bGQ.jpg", "Galaxy"),
+                new Picture("http://i.imgur.com/ovr0NAF.jpg", "Space Shuttle"),
+                new Picture("http://i.imgur.com/n6RfJX2.jpg", "Galaxy Orion"),
+                new Picture("http://i.imgur.com/qpr5LR2.jpg", "Earth"),
+                new Picture("http://i.imgur.com/pSHXfu5.jpg", "Astronaut"),
+                new Picture("http://i.imgur.com/3wQcZeY.jpg", "Satellite"),
+        };*/
 
     }
-*/
+
     @Override
     public int describeContents() {
         return 0;

@@ -41,8 +41,8 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        ArrayList imageUrlList = prepareData();
-        HomeFragment.ImageGalleryAdapter adapter = new HomeFragment.ImageGalleryAdapter(getContext(),  imageUrlList);
+        //ArrayList imageUrlList = prepareData();
+        HomeFragment.ImageGalleryAdapter adapter = new HomeFragment.ImageGalleryAdapter(getContext(),  Picture.getSpacePhotos(getContext()));
         recyclerView.setAdapter(adapter);
          super.onCreate(savedInstanceState);
 
@@ -85,14 +85,14 @@ public class HomeFragment extends Fragment {
         @Override
         public void onBindViewHolder(ImageGalleryAdapter.MyViewHolder holder, int position) {
 
-          //  Picture spacePhoto = mSpacePhotos[position];
+            Picture spacePhoto = mSpacePhotos[position];
             ImageView imageView = holder.mPhotoImageView;
 
 
 
 
             Glide.with(mContext)
-                    .load(mSpacePhotos.get(position).getUrl())
+                    .load(spacePhoto.getUrl())
                     .placeholder(R.drawable.ic_cloud_off_red)
                     .into(imageView);
 
@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return (mSpacePhotos.size());
+            return (mSpacePhotos.length);
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -109,8 +109,7 @@ public class HomeFragment extends Fragment {
 
             public MyViewHolder(View itemView) {
 
-                super(itemView);
-                mPhotoImageView = (ImageView) itemView.findViewById(R.id.iv_photo);
+                super(itemView);mPhotoImageView = (ImageView) itemView.findViewById(R.id.iv_photo);
                 itemView.setOnClickListener(this);
             }
 
@@ -119,18 +118,18 @@ public class HomeFragment extends Fragment {
 
                 int position = getAdapterPosition();
                 if(position != RecyclerView.NO_POSITION) {
-                    StorageListPicture spacePhoto = mSpacePhotos.get(position);
+                    Picture spacePhoto = mSpacePhotos[position];
                     Intent intent = new Intent(mContext, PictureActivity.class);
-                    intent.putExtra(PictureActivity.EXTRA_SPACE_PHOTO, spacePhoto.getUrl());
+                    intent.putExtra(PictureActivity.EXTRA_SPACE_PHOTO, spacePhoto);
                     startActivity(intent);
                 }
             }
         }
 
-        private ArrayList<StorageListPicture> mSpacePhotos;
+        private Picture[] mSpacePhotos;
         private Context mContext;
 
-        public ImageGalleryAdapter(Context context, ArrayList<StorageListPicture> spacePhotos) {
+        public ImageGalleryAdapter(Context context, Picture[] spacePhotos) {
             mContext = context;
             mSpacePhotos = spacePhotos;
         }
