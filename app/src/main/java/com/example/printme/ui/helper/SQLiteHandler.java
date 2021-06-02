@@ -9,6 +9,7 @@ import android.media.Image;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
@@ -22,22 +23,23 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "android_api";
+    private static final String DATABASE_NAME = "databasePOP.db";
 
     // Login table name
     private static final String TABLE_USER = "user";
-    // Login table name
+    // Image table name
     private static final String TABLE_IMAGE = "image";
 
     // Login Table Columns names
     private static final String KEY_ID = "id";
+    private static final String KEY_ID_TABLE = "idtable";
     private static final String KEY_NAME = "name";
     private static final String KEY_FIRSTNAME = "firstName";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
-    private static final String KEY_IDIMAGE = "";
-    private static final String KEY_IMAGE = "";
+    private static final String KEY_IDIMAGE = "idImage";
+    private static final String KEY_IMAGE = "url";
 
 
     public SQLiteHandler(Context context) {
@@ -48,10 +50,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + "TEXT," + KEY_NAME + " TEXT,"
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_NAME + " TEXT,"
                 + KEY_EMAIL + " TEXT UNIQUE," + KEY_UID + " TEXT,"
                 + KEY_CREATED_AT + " TEXT" + ")";
+        String CREATE_IMAGE_TABLE = "CREATE TABLE " + TABLE_IMAGE + "("
+                + KEY_ID_TABLE + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," + KEY_IDIMAGE + " INTEGER," + KEY_IMAGE + " TEXT "  + ")";
+
+        db.execSQL(CREATE_IMAGE_TABLE);
         db.execSQL(CREATE_LOGIN_TABLE);
+
 
         Log.d(TAG, "Database tables created");
     }
@@ -59,9 +66,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+
+        if(newVersion>oldVersion)
+
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
         // Create tables again
         onCreate(db);
     }
@@ -93,12 +104,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addIdImage(Integer idImage, String image) {
+    public void addIdImage(Integer idImage, String url) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_IDIMAGE, idImage); // idImage
-        values.put(KEY_IMAGE, image); // Name
+        values.put(KEY_IMAGE, url); // Name
+
 
 
         // Inserting Row
@@ -134,12 +146,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return user;
     }
 
-
     /**
      * Getting all id image from database
      * */
-    public HashMap  getIdImage() {
-        HashMap<String, Integer> image = new HashMap<>();
+    public ArrayList<String> getImage() {
+        ArrayList<String> image = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + TABLE_IMAGE;
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -147,8 +158,41 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         // Move to first row
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
+            do {
+                image.add(cursor.getString(2));
 
-            image.put("idImage", cursor.getInt(0));
+                // Adding contact to list
+                // reportList.add(reportTable);
+            } while (cursor.moveToNext());
+
+
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching image from Sqlite: " + image.toString());
+
+        return image;
+    }
+
+    /**
+     * Getting all id image from database
+     * */
+    public ArrayList<Integer> getIdImage() {
+        ArrayList<Integer> image = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_IMAGE;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            do {
+                image.add(cursor.getInt(1));
+                // Adding contact to list
+               // reportList.add(reportTable);
+            } while (cursor.moveToNext());
+
 
         }
         cursor.close();

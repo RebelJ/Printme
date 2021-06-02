@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
@@ -78,6 +79,9 @@ public class ListPicture extends Service {
         // SQLite database handler
         // Session manager
         session = new SessionManager(getApplicationContext());
+
+        // SQLite database handler
+        db = new SQLiteHandler(getApplicationContext());
     }
 
 
@@ -168,7 +172,6 @@ public class ListPicture extends Service {
          intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION); intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
          if (imageUri != null) {
 
-
              // Update UI to reflect image being shared
              String[] filePathColumn = {MediaStore.Images.Media.DATA};
              Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
@@ -182,11 +185,24 @@ public class ListPicture extends Service {
 
                      try {
                          uploadFile(uploadFilePath );
-                         Toast.makeText(getApplicationContext(), "well done ", Toast.LENGTH_LONG).show();
+
+                         new Handler(Looper.getMainLooper()).post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 Toast.makeText(getApplicationContext(), "well done ", Toast.LENGTH_LONG).show();
+                             }
+                         });
+
                      }
-                     catch(IOException e) {
+                     catch(final IOException e) {
                          e.printStackTrace();
-                         Toast.makeText(getApplicationContext(), "upload error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+                         new Handler(Looper.getMainLooper()).post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 Toast.makeText(getApplicationContext(), "upload error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                             }
+                         });
                      }
                  }
              }).start();
@@ -230,22 +246,23 @@ public class ListPicture extends Service {
 
                      // Check for error node in json
                      if (!error) {
-                         Integer idImage  = jObj.getInt("id");
+                         Integer idImage  = jObj.getInt("idImage");
                          // Now store the id image in SQLite
                          db.addIdImage(idImage, uploadFilePath );
 
 
-                         HashMap<Integer, String> peliculle = new HashMap<>();
-                        // String peliculle = "";
+                         ArrayList<Integer> peliculle = new ArrayList<>();
+                         new Handler(Looper.getMainLooper()).post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 Toast.makeText(getApplicationContext(), "Image enregistrée" , Toast.LENGTH_LONG).show();
+                             }
+                         });
 
                           peliculle = db.getIdImage();
 
 
-                       /*  Cursor cursor = db.fetch();
-                         cursor.moveToFirst();
-                         peliculle = cursor.getInt(2);*/
-                        // peliculle.add(db.getIdImage());
-                         if(peliculle.size() == 24)
+                         if(peliculle.size() >= 10)
                          {
                              // function send peliculle
                             uploadPeliculle(peliculle);
@@ -254,15 +271,17 @@ public class ListPicture extends Service {
 
                      }
 
-                 } catch (JSONException e) {
+                 } catch (final JSONException e) {
                      // JSON error
                      e.printStackTrace();
-                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                     new Handler(Looper.getMainLooper()).post(new Runnable() {
+                         @Override
+                         public void run() {
+                             Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                         }
+                     });
+
                  }
-
-
-
-
 
              } catch (MalformedURLException ex) {
 
@@ -281,7 +300,7 @@ public class ListPicture extends Service {
      }
 
 
-     public int uploadPeliculle(HashMap peliculle)throws IOException {
+     public int uploadPeliculle(ArrayList peliculle)throws IOException {
 
 
                 String pel = peliculle.toString();
@@ -289,9 +308,6 @@ public class ListPicture extends Service {
                  String charset = "UTF-8";
 
                  String iud = session.getUid();
-
-               //  ArrayList<String> peliculle = new ArrayList<peliculle>();
-                // String pelTable = peliculle;
 
                  MultipartUtility multipart = new MultipartUtility(URL_UPLOAD_PELICULLE, charset);
                  multipart.addFormField("idUser", iud);
@@ -307,17 +323,29 @@ public class ListPicture extends Service {
 
                      // Check for error node in json
                      if (!error) {
-                         Integer rep  = jObj.getInt("msg");
+                         final Integer rep  = jObj.getInt("msg");
+                         new Handler(Looper.getMainLooper()).post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 Toast.makeText(getApplicationContext(), "pellicule terminé" + rep, Toast.LENGTH_LONG).show();
+                             }
+                         });
 
-                         Toast.makeText(getApplicationContext(), rep, Toast.LENGTH_LONG).show();
+
 
                          // Now store the id image in SQLite
                      }
 
-                 } catch (JSONException e) {
+                 } catch (final JSONException e) {
                      // JSON error
                      e.printStackTrace();
-                     Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                     new Handler(Looper.getMainLooper()).post(new Runnable() {
+                         @Override
+                         public void run() {
+                             Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                         }
+                     });
+
                  }
 
 
