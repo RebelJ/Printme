@@ -59,7 +59,7 @@ public class LoginActivity extends Activity {
         inputPassword =  findViewById(R.id.password);
         btnLogin =  findViewById(R.id.btnLogin);
         btnLinkToRegister =  findViewById(R.id.btnLinkToRegisterScreen);
-        mdpBeta = findViewById(R.id.passwordBETA);
+
 
         // Progress dialog
         pDialog = new Dialog(this);
@@ -109,17 +109,13 @@ public class LoginActivity extends Activity {
         btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                String mdp = mdpBeta.getText().toString().trim();
-            if (!mdp.isEmpty() && mdp.equals("HK4MP")){
+
                 Intent i = new Intent(getApplicationContext(),
                         RegisterActivity.class);
                 startActivity(i);
                 finish();
             }
 
-
-
-            }
         });
 
     }
@@ -155,7 +151,7 @@ public class LoginActivity extends Activity {
                         // Now store the user in SQLite
                         String uid = jObj.getString("uid");
 
-                        JSONObject user = jObj.getJSONObject("user");
+                    /*    JSONObject user = jObj.getJSONObject("user");
                         String firstName = user.getString("firstName");
                         String name = user.getString("name");
                         String email = user.getString("email");
@@ -167,14 +163,14 @@ public class LoginActivity extends Activity {
                         String batiment = user.getString("batiment");
                         String phone = user.getString("phone");
                         String created_at = user
-                                .getString("created_at");
+                                .getString("created_at");*/
 
                         // Inserting row in users table
                        // db.addUser(firstName, name, email, uid, created_at, numero, address, codePostal, country, region, batiment, phone);
 
                         session.setUid(uid);
                         session.setEmail(email);
-                        session.setUser(firstName,name);
+                       // session.setUser(firstName,name);
 
 
                         // Launch main activity

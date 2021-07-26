@@ -164,8 +164,6 @@ public class ListPicture extends Service {
         }
     }
 
-
-
      void handleSendImage(Intent intent) {
          Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
 
@@ -186,12 +184,7 @@ public class ListPicture extends Service {
                      try {
                          uploadFile(uploadFilePath );
 
-                         new Handler(Looper.getMainLooper()).post(new Runnable() {
-                             @Override
-                             public void run() {
-                                 Toast.makeText(getApplicationContext(), "well done ", Toast.LENGTH_LONG).show();
-                             }
-                         });
+
 
                      }
                      catch(final IOException e) {
@@ -262,7 +255,7 @@ public class ListPicture extends Service {
                           peliculle = db.getIdImage();
 
 
-                         if(peliculle.size() >= 10)
+                         if(peliculle.size() == 24)
                          {
                              // function send peliculle
                             uploadPeliculle(peliculle);
@@ -283,16 +276,28 @@ public class ListPicture extends Service {
 
                  }
 
-             } catch (MalformedURLException ex) {
+                 } catch (final MalformedURLException ex) {
 
-                 ex.printStackTrace();
-                 Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-             } catch (Exception e) {
+                     ex.printStackTrace();
+                     Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+                     new Handler(Looper.getMainLooper()).post(new Runnable() {
+                         @Override
+                         public void run() {
+                             Toast.makeText(getApplicationContext(), "Server error" + ex.getMessage(), Toast.LENGTH_LONG).show();
+                         }
+                     });
+             } catch (final Exception e) {
 
                  e.printStackTrace();
 
                  Log.e("Upload file to server Exception", "Exception : "
                          + e.getMessage(), e);
+                 new Handler(Looper.getMainLooper()).post(new Runnable() {
+                     @Override
+                     public void run() {
+                         Toast.makeText(getApplicationContext(), "Upload Server error: " +e.getMessage(), Toast.LENGTH_LONG).show();
+                     }
+                 });
              }
              return serverResponseCode;
 
@@ -352,16 +357,28 @@ public class ListPicture extends Service {
 
 
 
-             } catch (MalformedURLException ex) {
+             } catch (final MalformedURLException ex) {
 
                  ex.printStackTrace();
                  Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-             } catch (Exception e) {
+                 new Handler(Looper.getMainLooper()).post(new Runnable() {
+                     @Override
+                     public void run() {
+                         Toast.makeText(getApplicationContext(), "Upload error: " +ex.getMessage(), Toast.LENGTH_LONG).show();
+                     }
+                 });
+             } catch (final Exception e) {
 
                  e.printStackTrace();
 
                  Log.e("Upload file to server Exception", "Exception : "
                          + e.getMessage(), e);
+                 new Handler(Looper.getMainLooper()).post(new Runnable() {
+                     @Override
+                     public void run() {
+                         Toast.makeText(getApplicationContext(), "Server error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                     }
+                 });
              }
              return serverResponseCode;
      }

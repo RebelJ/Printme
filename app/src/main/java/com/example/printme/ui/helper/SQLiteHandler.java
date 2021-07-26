@@ -147,7 +147,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Getting all id image from database
+     * Getting all image from database
      * */
     public ArrayList<String> getImage() {
         ArrayList<String> image = new ArrayList<>();
@@ -202,80 +202,17 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return image;
     }
-
-
-
-
     /**
-     * Getting user data from database
+     * Re crate database Delete all tables and create them again
      * */
-    public HashMap<String, String>  getNamenFirst() {
-        HashMap<String, String> user = new HashMap<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_USER;
+    public Boolean deleteImage(String url) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete image Rows
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            user.put("firstName", cursor.getString(1));
-            user.put("name", cursor.getString(2));
-        }
-        cursor.close();
-        db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
+        return db.delete(TABLE_IMAGE, KEY_IMAGE + "=?", new String[]{url}) > 0;
 
-        return user;
+        //Log.d(TAG, "Deleted image from sqlite");
     }
-
-    /**
-     * Getting user email from database
-     * */
-    public String  getUserEmail() {
-        HashMap<String, String> user = new HashMap<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_USER;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-
-            user.put("email", cursor.getString(3));
-
-        }
-        cursor.close();
-        db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
-
-        return user.toString();
-    }
-
-    /**
-     * Getting user iud from database
-     * */
-    public String  getUserUid() {
-        HashMap<String, String> user = new HashMap<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_USER;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            user.put("uid", cursor.getString(4));
-        }
-        cursor.close();
-        db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
-
-        return user.toString();
-    }
-
-
 
 
     /**
@@ -289,5 +226,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         Log.d(TAG, "Deleted all user info from sqlite");
     }
+
+
 
 }

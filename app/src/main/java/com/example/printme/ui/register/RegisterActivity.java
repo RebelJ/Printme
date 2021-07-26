@@ -113,7 +113,7 @@ public class RegisterActivity extends Activity {
                 String phone = inputPhone.getText().toString().trim();
 
 
-                if (confirmPassword == password){
+                if (confirmPassword.equals(password) ){
                     if (!firstName.isEmpty() && !name.isEmpty() && !email.isEmpty() && !password.isEmpty() &&
                     !numAddress.isEmpty() && !voieAddress.isEmpty() && !codePostal.isEmpty() && !country.isEmpty()) {
                         registerUser(firstName, name, email, password, numAddress, voieAddress, codePostal, country, region, batiment, phone);
@@ -122,8 +122,7 @@ public class RegisterActivity extends Activity {
                                 "Entrer tous les données obligatoires * ", Toast.LENGTH_LONG)
                                 .show();
                     }
-                }else
-                {
+                }else {
                     Toast.makeText(getApplicationContext(),
                             "Les mots de passe ne sont pas les mêmes", Toast.LENGTH_LONG)
                             .show();
@@ -180,13 +179,13 @@ public class RegisterActivity extends Activity {
                         String firstName = user.getString("firstName");
                         String name = user.getString("name");
                         String email = user.getString("email");
-                        String numero = user.getString("numero");
+                        String numero = user.getString("num");
                         String address = user.getString("address");
-                        String codePostal = user.getString("codePostal");
-                        String country = user.getString("country");
-                        String region = user.getString("region");
-                        String batiment = user.getString("batiment");
-                        String phone = user.getString("phone");
+                        String codePostal = user.getString("postal");
+                      //  String country = user.getString("country");
+                     //   String region = user.getString("region");
+                       // String batiment = user.getString("bat");
+                       // String phone = user.getString("tel");
 
                         String created_at = user
                                 .getString("created_at");
@@ -235,13 +234,14 @@ public class RegisterActivity extends Activity {
                 params.put("name", name);
                 params.put("email", email);
                 params.put("password", password);
-                params.put("numero", numAddress);
+                params.put("num", numAddress);
                 params.put("address", voieAddress);
-                params.put("codePostal", codePostal);
+                params.put("postal", codePostal);
+                params.put("city", country);
                 params.put("country", country);
                 params.put("region", region);
-                params.put("batiment", batiment);
-                params.put("phone", phone);
+                params.put("bat", batiment);
+                params.put("tel", phone);
 
                 return params;
             }

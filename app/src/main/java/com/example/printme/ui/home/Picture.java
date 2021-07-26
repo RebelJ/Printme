@@ -59,26 +59,6 @@ public class Picture implements Parcelable {
     }
 
     public static  Picture[] getSpacePhotos(Context context) {
-       /* ArrayList<String> pop = new ArrayList<String>();
-        // SQLite database handler
-        db = new SQLiteHandler(context);
-        pop = db.getImage();
-      //  Log.e("sqlite", "imagedata: " + pop.get(0));
-
-        ArrayList <Picture> pict = new ArrayList<Picture>();
-
-        for(int i =0; i<pop.size(); i++) {
-            pict.add(new Picture(pop.get(i), "pop " + i));
-        }
-
-
-
-        return  new Picture {
-                for(int i =0; i<pop.size(); i++) {
-                     pict.get(i);
-                }
-        };*/
-
         ArrayList<String> pop = new ArrayList<String>();
         // SQLite database handler
         db = new SQLiteHandler(context);

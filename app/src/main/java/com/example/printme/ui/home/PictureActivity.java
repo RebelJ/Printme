@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.printme.R;
+import com.example.printme.ui.helper.SQLiteHandler;
 
 public class PictureActivity extends AppCompatActivity {
 
@@ -19,6 +20,7 @@ public class PictureActivity extends AppCompatActivity {
     private ImageView mImageView;
     private Button btnDelete;
     private Button btnClose;
+    private static SQLiteHandler db;
 
 
     @Override
@@ -29,17 +31,28 @@ public class PictureActivity extends AppCompatActivity {
         mImageView = (ImageView) findViewById(R.id.image);
         btnDelete = (Button) findViewById(R.id.BTN_Delete);
         btnClose = (Button) findViewById(R.id.BTN_CloseView);
-        Picture spacePhoto = getIntent().getParcelableExtra(EXTRA_SPACE_PHOTO);
+        final Picture spacePhoto = getIntent().getParcelableExtra(EXTRA_SPACE_PHOTO);
 
         // Delete button Click Event
         btnDelete.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
 
+                db = new SQLiteHandler(getApplicationContext());
+                if(db.deleteImage(spacePhoto.getUrl()))
+                {
 
-                Toast.makeText(getApplicationContext(),
-                        "Photo supprimé!", Toast.LENGTH_LONG)
-                        .show();
+                    Toast.makeText(getApplicationContext(),
+                            "Photo supprimé!", Toast.LENGTH_LONG)
+                            .show();
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(),
+                            "ERREUR", Toast.LENGTH_LONG)
+                            .show();
+                }
+
+
 
             }
         });
@@ -51,11 +64,7 @@ public class PictureActivity extends AppCompatActivity {
 
             public void onClick(View view) {
 
-
-                // Prompt user to enter credentials
-                Toast.makeText(getApplicationContext(),
-                        "okokoko", Toast.LENGTH_LONG)
-                        .show();
+                finish();
 
             }
         });

@@ -30,7 +30,7 @@
     <string name="hint_Number">"N°"</string>
     <string name="hint_House">Adresse</string>
     <string name="hint_codePostal">Code Postal</string>
-    <string name="hint_country">Pays</string>
+    <string name="hint_country">Ville</string>
     <string name="hint_Batiment">Bâtiment</string>
     <string name="hint_region">Région</string>
     <string name="hint_phone">Téléphone</string>
