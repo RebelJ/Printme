@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.printme.ui.Credit.HomeFragment"
+        android:name="com.example.printme.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_credit" />
 
@@ -40,4 +40,13 @@
         android:name="com.example.printme.ui.send.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
+
+    <activity
+        android:id="@+id/nav_out"
+        android:name="com.example.printme.ui.login.LogoutActivity"
+        android:label="@string/menu_out"
+        tools:layout="@layout/activity_logout"/>
+
+
+
 </navigation>
